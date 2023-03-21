@@ -1,0 +1,21 @@
+import cv2
+import face_recognition
+from sklearn.metrics import f1_score
+
+# Load images
+img1 = face_recognition.load_image_file('obama.jpg')
+img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
+img1Test = face_recognition.load_image_file('obama2.jpg')
+img1Test = cv2.cvtColor(img1Test, cv2.COLOR_BGR2RGB)
+
+# Extract face encodings
+encodeFace = face_recognition.face_encodings(img1)[0]
+encodeTestFace = face_recognition.face_encodings(img1Test)[0]
+
+# Compare face encodings and compute F1-score
+true_labels = [1]
+predicted_labels = face_recognition.compare_faces([encodeFace], encodeTestFace)
+f1 = f1_score(true_labels, predicted_labels)
+
+# Print F1-score
+print(f"F1-score: {f1}")

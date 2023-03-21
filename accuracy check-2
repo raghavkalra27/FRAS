@@ -1,0 +1,38 @@
+import cv2
+import face_recognition
+import os
+import numpy as np
+
+dataset_path = './images'
+image_paths = [os.path.join(dataset_path, f) for f in os.listdir(dataset_path)]
+# labels = ['person1', 'person2', 'person3', ...]  # Labels for each person in the dataset
+labels = os.listdir(dataset_path)
+print(labels)
+train_paths = image_paths[:int(len(image_paths)*0.8)]
+test_paths = image_paths[int(len(image_paths)*0.8):]
+
+train_encodings = []
+train_labels = []
+for path in train_paths:
+    img = cv2.imread(path)
+    encoding = face_recognition.face_encodings(img)[0]
+    train_encodings.append(encoding)
+    label = labels[image_paths.index(path)]
+    train_labels.append(label)
+
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.train(train_encodings, train_labels)
+
+num_correct = 0
+num_total = len(test_paths)
+for path in test_paths:
+    img = cv2.imread(path)
+    expected_label = labels[image_paths.index(path)]
+    encoding = face_recognition.face_encodings(img)[0]
+    label, confidence = recognizer.predict(encoding)
+    if label == expected_label:
+        num_correct += 1
+
+accuracy = num_correct / num_total
+print(f"Accuracy: {accuracy}")
+

@@ -1,0 +1,27 @@
+import cv2
+import os
+
+# Collect the dataset of images
+dataset_path = './images'
+image_paths = [os.path.join(dataset_path, f) for f in os.listdir(dataset_path)]
+
+# Split the dataset into a training set and a testing set
+train_paths = image_paths[:int(len(image_paths)*0.8)]
+test_paths = image_paths[int(len(image_paths)*0.8):]
+
+# Train the face recognition system
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+labels = [1, 2, 3, ...]  # Labels for each person in the dataset
+#recognizer.train(train_paths, labels)
+
+# Test the accuracy of the face recognition system
+num_correct = 0
+num_total = len(test_paths)
+for path in test_paths:
+    img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+    label, confidence = recognizer.predict(img)
+    if label == expected_label:
+        num_correct += 1
+
+accuracy = num_correct / num_total
+print(f"Accuracy: {accuracy}")
