@@ -52,6 +52,20 @@ def Attendance(name):
     time_now = datetime.now()
     tStr = time_now.strftime('%H:%M:%S')
     dStr = time_now.strftime('%d/%m/%Y')
+
+    datesStr = time_now.strftime('%d-%m-%Y')
+    date_ref = db.collection('dates').document(datesStr)
+    getDateData = date_ref.get()
+    
+    if getDateData.exists:
+            tempDates = getDateData.to_dict()
+            dateNames = tempDates["names"]
+            if(dateNames[len(dateNames) - 1] != name):
+                dateNames.insert(len(dateNames), name)
+                date_ref.update({"names" :dateNames})
+    else:
+        date_ref.set({"names": [name]})
+
     if getData.exists:
         temp = getData.to_dict()
         tempDate = temp["date"]
@@ -63,8 +77,7 @@ def Attendance(name):
             doc_ref.update({
                 'date': tempDate,
                 'time': tempTime,
-                # 'born': tempDate
-            })
+        })
     else:
         tempDate = []
         tempTime = []
@@ -93,7 +106,7 @@ encodeListKnown = faceEncodings(images)
 teacherEncodingList = faceEncodings(teacherImages)
 print('All Encodings Complete!!!')
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 while True:
     ret, frame = cap.read()
