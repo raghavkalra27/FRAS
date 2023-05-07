@@ -167,6 +167,34 @@ while True:
                 cv2.putText(frame, name, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
                 processStart = True
                 print('Process start')
+
+                doc_ref = db.collection('teacher').document(name)
+                getData = doc_ref.get()
+                time_now = datetime.now()
+                tStr = time_now.strftime('%H:%M:%S')
+                dStr = time_now.strftime('%d/%m/%Y')
+                if getData.exists:
+                    temp = getData.to_dict()
+                    tempDate = temp["date"]
+                    tempTime = temp["time"]
+                    if tempDate[len(tempDate) - 1] != dStr:
+                        tempDate.insert(len(tempDate), dStr)
+                        tempTime.insert(len(tempTime), tStr)
+                        print(tempDate)
+                        doc_ref.update({
+                            'date': tempDate,
+                            'time': tempTime,
+                    })
+                else:
+                    tempDate = []
+                    tempTime = []
+                    tempDate.insert(len(tempDate), dStr)
+                    tempTime.insert(len(tempTime), tStr)
+                    doc_ref.set({
+                        'date': tempDate,
+                        'time': tempTime,
+                    })
+
             else:
                 name = 'Unkown'
                 y1, x2, y2, x1 = faceLoc
